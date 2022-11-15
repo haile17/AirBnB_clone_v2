@@ -2,18 +2,18 @@
 # fbric script that generates a tgz archive from the content web_static
 # folder of the AirBnB clone repo
 
-from datatime import datatime
+from datetime import datetime
 from fabric.api import local
-from os.path import isdir
+from fabric.decorators import runs_once
 
+@runs_once
 def do_pack():
+
 	"""generates a tgz archive"""
-	try:
-		data = datatime.now().strftime("Y%m%d%H%M%S")
-		if isdir("versions") is False:
-			local ("mkdir version")
-		file_name = "version/web_static_{}.tgz".format(data)
-		local("tar -cvzf {} web_static".format(file_name))
-		return file_name
-	except:
-		return None 
+	local("mkdir -p versions")
+	path = ("version/web_static_{}.tgz"
+					.format(datetime.strftime(datetime.now(), "Y%m%d%H%M%S")))
+	result = local("tar -cvzf {} web_static".format(path))
+	if result.failed:
+		return None
+	return path
